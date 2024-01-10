@@ -187,6 +187,7 @@ func TestCanPlaceShipAtX6(t *testing.T) {
 	if err != nil {
 		t.Error("Cannot place a ship at x=6.")
 	}
+
 }
 func TestCanPlaceShipAtY6(t *testing.T) {
 	//Arrange
@@ -295,10 +296,10 @@ func TestCanShootAtX6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 6, 1)
+	_, _, got := takeShot(grid, 6, 1)
 	//Assert
-	want := "MISS"
-	if result != want {
+
+	if got != nil {
 		t.Error("Cannot shoot at x=6.")
 	}
 }
@@ -307,21 +308,22 @@ func TestCanShootAtY6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 1, 6)
+	_, _, got := takeShot(grid, 1, 6)
 	//Assert
-	want := "MISS"
-	if result != want {
+
+	if got != nil {
 		t.Error("Cannot shoot at y=6.")
 	}
 }
+
 func TestCanShootAtX0(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 0, 1)
+	_, _, got := takeShot(grid, 0, 1)
 	//Assert
-	want := "MISS"
-	if result != want {
+
+	if got != nil {
 		t.Error("Cannot shoot at x=0.")
 	}
 }
@@ -330,20 +332,22 @@ func TestCanShootAtY0(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 1, 0)
+	_, _, got := takeShot(grid, 1, 0)
 	//Assert
-	want := "MISS"
-	if result != want {
+
+	if got != nil {
 		t.Error("Cannot shoot at y=0.")
 	}
 }
+
 func TestCannotShootAtXCoordinatePast6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 7, 6)
+	_, _, got := takeShot(grid, 7, 6)
 	//Assert
-	if result == "MISS" {
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -351,9 +355,10 @@ func TestCannotShootAtYCoordinatePast6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 6, 7)
+	_, _, got := takeShot(grid, 6, 7)
 	//Assert
-	if result == "MISS" {
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -362,9 +367,10 @@ func TestCannotShootAtNegativeXCoordinate(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, -1, 5)
+	_, _, got := takeShot(grid, -1, 5)
 	//Assert
-	if result == "MISS" {
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -373,9 +379,10 @@ func TestCannotShootAtNegativeYCoordinate(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, _ := takeShot(grid, 1, -1)
+	_, _, got := takeShot(grid, 1, -1)
 	//Assert
-	if result == "MISS" {
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
