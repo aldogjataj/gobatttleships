@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -114,14 +115,11 @@ func TestCannotPlaceMoreThanNineShips(t *testing.T) {
 	grid, _ = PlaceShip(grid, 1, 2)
 
 	// Act
-
-	_, err := PlaceShip(grid, 3, 4)
+	_, got := PlaceShip(grid, 3, 4)
 	// Assert
-	if err == nil {
-		t.Errorf("Expected an error for placing a 10th ship, didn't get one.")
-	}
-	if grid[3][4] == "S" {
-		t.Errorf("A tenth ship was placed.")
+	want := errors.New("Cannot place more than 9 ships.")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
 
@@ -138,10 +136,10 @@ func TestAttemptToPlaceTenthShipDoesntChangeGrid(t *testing.T) {
 	grid, _ = PlaceShip(grid, 0, 1)
 	grid, _ = PlaceShip(grid, 1, 2)
 	//Act
-	_, err := PlaceShip(grid, 3, 5)
+	grid, _ = PlaceShip(grid, 3, 5)
 	//Assert
-	if err == nil {
-		t.Errorf("Expected an error, didn't get one.")
+	if grid[3][5] == "S" {
+		t.Error("Tenth ship was placed.")
 	}
 
 }
@@ -151,13 +149,12 @@ func TestCannotStackShips(t *testing.T) {
 	grid, _ = PlaceShip(grid, 3, 5)
 
 	// Act
-	_, err := PlaceShip(grid, 3, 5)
+	_, got := PlaceShip(grid, 3, 5)
 
 	// Assert
-	got := err
-	want := "Two ships cannot be placed on the same place"
-	if got.Error() != want {
-		t.Error("ships are on the same place")
+	want := errors.New("Two ships cannot be placed on the same place.")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
 
@@ -171,7 +168,7 @@ func TestCanPlaceShipAtx0(t *testing.T) {
 		t.Error("Cannot place a ship at x=0.")
 	}
 }
-func TestCanPlaceShipAty0(t *testing.T) {
+func TestCanPlaceShipAtY0(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
@@ -181,7 +178,7 @@ func TestCanPlaceShipAty0(t *testing.T) {
 		t.Error("Cannot place a ship at y=0.")
 	}
 }
-func TestCanPlaceAtx6(t *testing.T) {
+func TestCanPlaceShipAtX6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
@@ -191,7 +188,7 @@ func TestCanPlaceAtx6(t *testing.T) {
 		t.Error("Cannot place a ship at x=6.")
 	}
 }
-func TestCanPlaceAty6(t *testing.T) {
+func TestCanPlaceShipAtY6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
@@ -202,58 +199,62 @@ func TestCanPlaceAty6(t *testing.T) {
 	}
 }
 
-func TestCannotPlaceatX7(t *testing.T) {
+func TestCannotPlaceShipAtX7(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, err := PlaceShip(grid, 7, 2)
+	_, got := PlaceShip(grid, 7, 2)
 	//Assert
-	if err == nil {
-		t.Error("Error did not return from attempting to place a ship outside the grid. ")
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
 
-func TestCannotPlaceatY7(t *testing.T) {
+func TestCannotPlaceShipAtY7(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, err := PlaceShip(grid, 2, 7)
+	_, got := PlaceShip(grid, 2, 7)
 	//Assert
-	if err == nil {
-		t.Error("Error did not return from attempting to place a ship outside the grid. ")
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
+
 func TestCannotPlaceShipAtNegativeX(t *testing.T) {
 	//Act
 	grid := CreateGrid()
 	//Act
-	_, err := PlaceShip(grid, -1, 5)
+	_, got := PlaceShip(grid, -1, 5)
 	//Assert
-	if err == nil {
-		t.Error("Error did not return from attempting to place a ship outside the grid. ")
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
+
 func TestCannotPlaceShipAtNegativeY(t *testing.T) {
 	//Act
 	grid := CreateGrid()
 	//Act
-	_, err := PlaceShip(grid, 1, -1)
+	_, got := PlaceShip(grid, 1, -1)
 	//Assert
-	if err == nil {
-		t.Error("Error did not return from attempting to place a ship outside the grid. ")
+	want := errors.New("coordinates out of bounds")
+	if got.Error() != want.Error() {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
-func TestShotIsRecorded(t *testing.T) {
+
+func TestReportShotMissed(t *testing.T) {
 	// Arrange
 	grid := CreateGrid()
 
 	// Act
-	_, result, err := takeShot(grid, 3, 5)
+	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Errorf("Shot was not recorded.")
@@ -266,12 +267,9 @@ func TestReportsShipIsHit(t *testing.T) {
 	grid, _ = PlaceShip(grid, 3, 5)
 
 	// Act
-	_, result, err := takeShot(grid, 3, 5)
+	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "HIT"
 	if result != want {
 		t.Error("Ship was not hit!")
@@ -285,12 +283,9 @@ func TestShotAtSunkShipReportsMiss(t *testing.T) {
 	grid, _, _ = takeShot(grid, 3, 5)
 
 	// Act
-	_, result, err := takeShot(grid, 3, 5)
+	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Error("Shooting at a sunk ship still shows as a hit.")
@@ -300,11 +295,8 @@ func TestCanShootAtX6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 6, 1)
+	_, result, _ := takeShot(grid, 6, 1)
 	//Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Error("Cannot shoot at x=6.")
@@ -315,11 +307,8 @@ func TestCanShootAtY6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 1, 6)
+	_, result, _ := takeShot(grid, 1, 6)
 	//Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Error("Cannot shoot at y=6.")
@@ -329,11 +318,8 @@ func TestCanShootAtX0(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 0, 1)
+	_, result, _ := takeShot(grid, 0, 1)
 	//Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Error("Cannot shoot at x=0.")
@@ -344,11 +330,8 @@ func TestCanShootAtY0(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 1, 0)
+	_, result, _ := takeShot(grid, 1, 0)
 	//Assert
-	if err != nil {
-		t.Error("Unexpected error:", err)
-	}
 	want := "MISS"
 	if result != want {
 		t.Error("Cannot shoot at y=0.")
@@ -358,9 +341,9 @@ func TestCannotShootAtXCoordinatePast6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 7, 6)
+	_, result, _ := takeShot(grid, 7, 6)
 	//Assert
-	if err == nil || result == "MISS" {
+	if result == "MISS" {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -368,9 +351,9 @@ func TestCannotShootAtYCoordinatePast6(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 6, 7)
+	_, result, _ := takeShot(grid, 6, 7)
 	//Assert
-	if err == nil || result == "MISS" {
+	if result == "MISS" {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -379,9 +362,9 @@ func TestCannotShootAtNegativeXCoordinate(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, -1, 5)
+	_, result, _ := takeShot(grid, -1, 5)
 	//Assert
-	if err == nil || result == "MISS" {
+	if result == "MISS" {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }
@@ -390,9 +373,9 @@ func TestCannotShootAtNegativeYCoordinate(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	//Act
-	_, result, err := takeShot(grid, 1, -1)
+	_, result, _ := takeShot(grid, 1, -1)
 	//Assert
-	if err == nil || result == "MISS" {
+	if result == "MISS" {
 		t.Error("Shot was taken outside of the grid.")
 	}
 }

@@ -37,7 +37,7 @@ func CreateGrid() (grid [7][7]string) {
 	return [7][7]string{}
 }
 
-func countShips(grid [7][7]string) int {
+func countShips(grid [7][7]string) (int, error) {
 	shipCount := 0
 	for _, row := range grid {
 		for _, cell := range row {
@@ -46,23 +46,26 @@ func countShips(grid [7][7]string) int {
 			}
 		}
 	}
-	return shipCount
+	if shipCount >= 9 {
+		return shipCount, errors.New("Cannot place more than 9 ships.")
+	}
+
+	return shipCount, nil
 }
 
 func PlaceShip(grid [7][7]string, col, row int) ([7][7]string, error) {
-
-	if countShips(grid) >= 9 {
-		return grid, errors.New("Cannot place more than 9 ships")
+	err := checkCoordinatesAreInTheGrid(col, row)
+	if err != nil {
+		return grid, err
 	}
 
-	err := checkCoordinatesAreInTheGrid(col, row)
-
+	_, err = countShips(grid)
 	if err != nil {
 		return grid, err
 	}
 
 	if grid[col][row] == "S" {
-		return grid, errors.New("Two ships cannot be placed on the same place")
+		return grid, errors.New("Two ships cannot be placed on the same place.")
 	}
 
 	grid[col][row] = "S"
