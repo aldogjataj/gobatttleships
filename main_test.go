@@ -136,9 +136,9 @@ func TestAttemptToPlaceTenthShipDoesntChangeGrid(t *testing.T) {
 	grid, _ = PlaceShip(grid, 0, 1)
 	grid, _ = PlaceShip(grid, 1, 2)
 	//Act
-	grid, _ = PlaceShip(grid, 3, 5)
+	newGrid, _ := PlaceShip(grid, 3, 5)
 	//Assert
-	if grid[3][5] == "S" {
+	if newGrid != grid {
 		t.Error("Tenth ship was placed.")
 	}
 
@@ -384,6 +384,63 @@ func TestCannotShootAtNegativeYCoordinate(t *testing.T) {
 	want := errors.New("coordinates out of bounds")
 	if got.Error() != want.Error() {
 		t.Error("Shot was taken outside of the grid.")
+	}
+}
+func TestGameOverAt0Ships(t *testing.T) {
+	//Arrange
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 0, 0)
+	grid, _ = PlaceShip(grid, 1, 1)
+	grid, _ = PlaceShip(grid, 2, 2)
+	grid, _ = PlaceShip(grid, 3, 3)
+	grid, _ = PlaceShip(grid, 4, 4)
+	grid, _ = PlaceShip(grid, 5, 5)
+	grid, _ = PlaceShip(grid, 6, 6)
+	grid, _ = PlaceShip(grid, 0, 1)
+	grid, _ = PlaceShip(grid, 1, 2)
+	//Act
+	grid, _, _ = takeShot(grid, 0, 0)
+	grid, _, _ = takeShot(grid, 1, 1)
+	grid, _, _ = takeShot(grid, 2, 2)
+	grid, _, _ = takeShot(grid, 3, 3)
+	grid, _, _ = takeShot(grid, 4, 4)
+	grid, _, _ = takeShot(grid, 5, 5)
+	grid, _, _ = takeShot(grid, 6, 6)
+	grid, _, _ = takeShot(grid, 0, 1)
+	grid, _, _ = takeShot(grid, 1, 2)
+	got := isGameOver(grid)
+	//Assert
+	want := true
+	if got != want {
+		t.Error("Game should have ended.")
+	}
+}
+func TestGameNotOverWith1ShipLeft(t *testing.T) {
+	//Arrange
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 0, 0)
+	grid, _ = PlaceShip(grid, 1, 1)
+	grid, _ = PlaceShip(grid, 2, 2)
+	grid, _ = PlaceShip(grid, 3, 3)
+	grid, _ = PlaceShip(grid, 4, 4)
+	grid, _ = PlaceShip(grid, 5, 5)
+	grid, _ = PlaceShip(grid, 6, 6)
+	grid, _ = PlaceShip(grid, 0, 1)
+	grid, _ = PlaceShip(grid, 1, 2)
+	//Act
+	grid, _, _ = takeShot(grid, 0, 0)
+	grid, _, _ = takeShot(grid, 1, 1)
+	grid, _, _ = takeShot(grid, 2, 2)
+	grid, _, _ = takeShot(grid, 3, 3)
+	grid, _, _ = takeShot(grid, 4, 4)
+	grid, _, _ = takeShot(grid, 5, 5)
+	grid, _, _ = takeShot(grid, 6, 6)
+	grid, _, _ = takeShot(grid, 0, 1)
+	got := isGameOver(grid)
+	//Assert
+	want := false
+	if got != want {
+		t.Error("Game should not have ended.")
 	}
 }
 
