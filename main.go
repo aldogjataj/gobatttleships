@@ -26,7 +26,7 @@ func PlayerTwoTurn(playerOneGrid [7][7]string, shotCoordinates []int) (shotStatu
 	return true // shot hit
 }
 func checkCoordinatesAreInTheGrid(col, row int) error {
-	if col < 0 || col >= 7 || row < 0 || row >= 7 {
+	if col < 0 || col > 6 || row < 0 || row > 6 {
 		return errors.New("coordinates out of bounds")
 	}
 	return nil // Coordinates are valid
@@ -37,7 +37,7 @@ func CreateGrid() (grid [7][7]string) {
 	return [7][7]string{}
 }
 
-func countShips(grid [7][7]string) (int, error) {
+func countShips(grid [7][7]string) int {
 	shipCount := 0
 	for _, row := range grid {
 		for _, cell := range row {
@@ -46,11 +46,7 @@ func countShips(grid [7][7]string) (int, error) {
 			}
 		}
 	}
-	if shipCount >= 9 {
-		return shipCount, errors.New("Cannot place more than 9 ships.")
-	}
-
-	return shipCount, nil
+	return shipCount
 }
 
 func PlaceShip(grid [7][7]string, col, row int) ([7][7]string, error) {
@@ -59,9 +55,9 @@ func PlaceShip(grid [7][7]string, col, row int) ([7][7]string, error) {
 		return grid, err
 	}
 
-	_, err = countShips(grid)
-	if err != nil {
-		return grid, err
+	shipCount := countShips(grid)
+	if shipCount >= 9 {
+		return grid, errors.New("Cannot place more than 9 ships.")
 	}
 
 	if grid[col][row] == "S" {
@@ -83,8 +79,8 @@ func takeShot(grid [7][7]string, col, row int) ([7][7]string, string, error) {
 		grid[col][row] = "HIT"
 		result = "HIT"
 	} else {
-		grid[col][row] = "MISS"
-		result = "MISS"
+		grid[col][row] = "X"
+		result = "X"
 	}
 	return grid, result, nil
 }
@@ -101,4 +97,8 @@ func isGameOver(grid [7][7]string) bool {
 		return true
 	}
 	return false
+}
+
+func isShipAt(grid [7][7]string, col, row int) bool {
+	return grid[col][row] == "S"
 }

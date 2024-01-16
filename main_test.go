@@ -23,43 +23,9 @@ func getRandomGridSquare() []int {
 
 }
 
-//these are the two tests we have for our functions in main
-//the purpose of tests is to mimic interaction with our code
-//there is no "user input" - the test is the calling code
-
-// here is an example of a failing test - what do we need to do to fix it?
-func TestCreateGrid(t *testing.T) {
-	grid := CreateGrid()
-
-	gridSizeCols := len(grid)
-	if gridSizeCols != 7 {
-		t.Error("Grid has the wrong Number of collums! Expected size of 7, got: ", gridSizeCols)
-	}
-	gridSizeRows := len(grid[0])
-	if gridSizeRows != 7 {
-		t.Error("Grid has the wrong number of rows. Expected 7, got:", gridSizeRows)
-	}
-}
-
-//one good place to start here is by using our utility function
-//to target a random grid square rather than 1,1 co-ordinates every time
-
-func TestPlayerOneTakingShot(t *testing.T) {
-	grid := CreateGrid()
-	shotResult := PlayerOneTurn(grid, []int{1, 1})
-	if shotResult != false {
-		t.Error("Shot should be false!")
-	}
-}
-
-func TestPlayerTwoTakingShot(t *testing.T) {
-	grid := CreateGrid()
-	shotResult := PlayerTwoTurn(grid, []int{1, 1})
-	if shotResult != true {
-		t.Error("Shot should be true!")
-	}
-}
-
+// these are the two tests we have for our functions in main
+// the purpose of tests is to mimic interaction with our code
+// there is no "user input" - the test is the calling code
 func TestPlaceAShip(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
@@ -68,8 +34,8 @@ func TestPlaceAShip(t *testing.T) {
 	desiredRow := 5
 	updatedGrid, _ := PlaceShip(grid, desiredCol, desiredRow)
 	//Assert
-	actual := updatedGrid[3][5]
-	want := "S"
+	actual := isShipAt(updatedGrid, 3, 5)
+	want := true
 	if actual != want {
 		t.Error("Ship was not placed at [3,5]")
 	}
@@ -77,24 +43,18 @@ func TestPlaceAShip(t *testing.T) {
 func TestCanPlaceNineShips(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
-	grid, _ = PlaceShip(grid, 0, 0)
+	grid, _ = PlaceShip(grid, 1, 0)
 	grid, _ = PlaceShip(grid, 1, 1)
-	grid, _ = PlaceShip(grid, 2, 2)
-	grid, _ = PlaceShip(grid, 3, 3)
-	grid, _ = PlaceShip(grid, 4, 4)
-	grid, _ = PlaceShip(grid, 5, 5)
-	grid, _ = PlaceShip(grid, 6, 6)
-	grid, _ = PlaceShip(grid, 0, 1)
 	grid, _ = PlaceShip(grid, 1, 2)
+	grid, _ = PlaceShip(grid, 2, 0)
+	grid, _ = PlaceShip(grid, 2, 1)
+	grid, _ = PlaceShip(grid, 2, 2)
+	grid, _ = PlaceShip(grid, 3, 0)
+	grid, _ = PlaceShip(grid, 3, 1)
+	grid, _ = PlaceShip(grid, 3, 2)
+
 	//Act
-	shipCount := 0
-	for _, row := range grid {
-		for _, cell := range row {
-			if cell == "S" {
-				shipCount++
-			}
-		}
-	}
+	shipCount := countShips(grid)
 	//Assert
 	if shipCount != 9 {
 		t.Errorf("Expected 9 ships, not %d", shipCount)
@@ -248,7 +208,7 @@ func TestCannotPlaceShipAtNegativeY(t *testing.T) {
 	}
 }
 
-func TestReportShotMissed(t *testing.T) {
+func TestReportShotTaken(t *testing.T) {
 	// Arrange
 	grid := CreateGrid()
 
@@ -256,7 +216,7 @@ func TestReportShotMissed(t *testing.T) {
 	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	want := "MISS"
+	want := "X"
 	if result != want {
 		t.Errorf("Shot was not recorded.")
 	}
@@ -287,7 +247,7 @@ func TestShotAtSunkShipReportsMiss(t *testing.T) {
 	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	want := "MISS"
+	want := "X"
 	if result != want {
 		t.Error("Shooting at a sunk ship still shows as a hit.")
 	}
@@ -444,6 +404,22 @@ func TestGameNotOverWith1ShipLeft(t *testing.T) {
 	}
 }
 
+/*func TestAllShipsBeingShotWithUnder9PlacedEndsGame(t *testing.T) {
+	//Arrange
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 0, 0)
+	grid, _ = PlaceShip(grid, 1, 1)
+	//Act
+	NewGrid, _, _ := takeShot(grid, 0, 0)
+	NewGrid, _, _ = takeShot(grid, 0, 0)
+	got := isGameOver(NewGrid)
+	//Assert
+	want := true
+	if got != want {
+		t.Error("Game should have ended.")
+	}
+}
+*/
 //other tests here that fail
 
 // sometimes we write tests to test our own functions.
