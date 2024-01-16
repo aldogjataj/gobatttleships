@@ -358,6 +358,7 @@ func TestGameOverAt0Ships(t *testing.T) {
 	grid, _ = PlaceShip(grid, 6, 6)
 	grid, _ = PlaceShip(grid, 0, 1)
 	grid, _ = PlaceShip(grid, 1, 2)
+	shipCount := countShips(grid)
 	//Act
 	grid, _, _ = takeShot(grid, 0, 0)
 	grid, _, _ = takeShot(grid, 1, 1)
@@ -368,8 +369,8 @@ func TestGameOverAt0Ships(t *testing.T) {
 	grid, _, _ = takeShot(grid, 6, 6)
 	grid, _, _ = takeShot(grid, 0, 1)
 	grid, _, _ = takeShot(grid, 1, 2)
-	got := isGameOver(grid)
 	//Assert
+	got := isGameOver(grid, shipCount)
 	want := true
 	if got != want {
 		t.Error("Game should have ended.")
@@ -387,6 +388,7 @@ func TestGameNotOverWith1ShipLeft(t *testing.T) {
 	grid, _ = PlaceShip(grid, 6, 6)
 	grid, _ = PlaceShip(grid, 0, 1)
 	grid, _ = PlaceShip(grid, 1, 2)
+	shipCount := countShips(grid)
 	//Act
 	grid, _, _ = takeShot(grid, 0, 0)
 	grid, _, _ = takeShot(grid, 1, 1)
@@ -396,30 +398,31 @@ func TestGameNotOverWith1ShipLeft(t *testing.T) {
 	grid, _, _ = takeShot(grid, 5, 5)
 	grid, _, _ = takeShot(grid, 6, 6)
 	grid, _, _ = takeShot(grid, 0, 1)
-	got := isGameOver(grid)
 	//Assert
+	got := isGameOver(grid, shipCount)
 	want := false
 	if got != want {
 		t.Error("Game should not have ended.")
 	}
 }
 
-/*func TestAllShipsBeingShotWithUnder9PlacedEndsGame(t *testing.T) {
+func TestAllShipsBeingShotWithUnder9PlacedEndsGame(t *testing.T) {
 	//Arrange
 	grid := CreateGrid()
 	grid, _ = PlaceShip(grid, 0, 0)
 	grid, _ = PlaceShip(grid, 1, 1)
+	shipCount := countShips(grid)
 	//Act
-	NewGrid, _, _ := takeShot(grid, 0, 0)
-	NewGrid, _, _ = takeShot(grid, 0, 0)
-	got := isGameOver(NewGrid)
+	grid, _, _ = takeShot(grid, 0, 0)
+	grid, _, _ = takeShot(grid, 1, 1)
 	//Assert
+	got := isGameOver(grid, shipCount)
 	want := true
 	if got != want {
 		t.Error("Game should have ended.")
 	}
 }
-*/
+
 //other tests here that fail
 
 // sometimes we write tests to test our own functions.

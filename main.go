@@ -84,7 +84,7 @@ func takeShot(grid [7][7]string, col, row int) ([7][7]string, string, error) {
 	}
 	return grid, result, nil
 }
-func isGameOver(grid [7][7]string) bool {
+func isGameOver(grid [7][7]string, numberOfShips int) bool {
 	numberOfShotShips := 0
 	for _, row := range grid {
 		for _, cell := range row {
@@ -93,7 +93,7 @@ func isGameOver(grid [7][7]string) bool {
 			}
 		}
 	}
-	if numberOfShotShips == 9 {
+	if numberOfShotShips == numberOfShips {
 		return true
 	}
 	return false
