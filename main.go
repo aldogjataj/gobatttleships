@@ -18,13 +18,6 @@ The player to first sink all their opponent's battleships is the winner
 
 // All code in here is example code, you do not have to keep any of it.
 
-func PlayerOneTurn(playerTwoGrid [7][7]string, shotCoordinates []int) (shotStatus bool) {
-	return false // shot missed
-}
-
-func PlayerTwoTurn(playerOneGrid [7][7]string, shotCoordinates []int) (shotStatus bool) {
-	return true // shot hit
-}
 func checkCoordinatesAreInTheGrid(col, row int) error {
 	if col < 0 || col > 6 || row < 0 || row > 6 {
 		return errors.New("coordinates out of bounds")
@@ -72,15 +65,14 @@ func takeShot(grid [7][7]string, col, row int) ([7][7]string, string, error) {
 	err := checkCoordinatesAreInTheGrid(col, row)
 
 	if err != nil {
-		return grid, "", err
+		return grid, "INVALID", err
 	}
 
 	if grid[col][row] == "S" {
 		grid[col][row] = "HIT"
 		result = "HIT"
 	} else {
-		grid[col][row] = "X"
-		result = "X"
+		result = "MISS"
 	}
 	return grid, result, nil
 }
@@ -101,4 +93,20 @@ func isGameOver(grid [7][7]string, numberOfShips int) bool {
 
 func isShipAt(grid [7][7]string, col, row int) bool {
 	return grid[col][row] == "S"
+}
+
+func changeTurnsBetweenPlayers1And2(currentPlayer int) int {
+	if currentPlayer == 1 {
+		return 2
+	}
+	return 1 //There are only two options, which is why there is not another if statement here.
+}
+
+func turnChangesDependingOnShotTakingResult(currentPlayer int, shotResult string) int {
+	if shotResult == "HIT" {
+		return changeTurnsBetweenPlayers1And2(currentPlayer)
+	} else if shotResult == "MISS" {
+		return changeTurnsBetweenPlayers1And2(currentPlayer)
+	}
+	return currentPlayer
 }

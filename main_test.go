@@ -216,7 +216,7 @@ func TestReportShotTaken(t *testing.T) {
 	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	want := "X"
+	want := "MISS"
 	if result != want {
 		t.Errorf("Shot was not recorded.")
 	}
@@ -247,7 +247,7 @@ func TestShotAtSunkShipReportsMiss(t *testing.T) {
 	_, result, _ := takeShot(grid, 3, 5)
 
 	// Assert
-	want := "X"
+	want := "MISS"
 	if result != want {
 		t.Error("Shooting at a sunk ship still shows as a hit.")
 	}
@@ -420,6 +420,69 @@ func TestAllShipsBeingShotWithUnder9PlacedEndsGame(t *testing.T) {
 	want := true
 	if got != want {
 		t.Error("Game should have ended.")
+	}
+}
+func TestTurnChangesFromPlayer1ToPlayer2(t *testing.T) {
+	//Arrange
+	currentPlayer := 1
+	//Act
+	currentPlayer = changeTurnsBetweenPlayers1And2(currentPlayer)
+	//Assert
+	if currentPlayer != 2 {
+		t.Error("Expected current player to be 2, got ", currentPlayer)
+	}
+}
+func TestTurnChangesFromPlayer2ToPlayer1(t *testing.T) {
+	//Arrange
+	currentPlayer := 2
+	//Act
+	currentPlayer = changeTurnsBetweenPlayers1And2(currentPlayer)
+	//Assert
+	if currentPlayer != 1 {
+		t.Error("Expected current player to be 1, got ", currentPlayer)
+	}
+}
+func TestTurnChangesIfShotResultIsHit(t *testing.T) {
+	//Arrange
+	currentPlayer := 1
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 3, 5)
+	//Act
+	grid, result, _ := takeShot(grid, 3, 5)
+	got := turnChangesDependingOnShotTakingResult(currentPlayer, result)
+	//Assert
+	want := 2
+	if got != want {
+		t.Error("Expected current player to change to 2 after a hit, got ", got)
+	}
+}
+
+func TestTurnChangesIfShotResultIsMiss(t *testing.T) {
+	//Arrange
+	currentPlayer := 2
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 3, 5)
+	//Act
+	grid, result, _ := takeShot(grid, 2, 5)
+	got := turnChangesDependingOnShotTakingResult(currentPlayer, result)
+	//Assert
+	want := 1
+	if got != want {
+		t.Error("Expected current player to change to 2 after a miss, got ", got)
+	}
+}
+func TestTurnDoesntChangesIfShotResultIsInvalid(t *testing.T) {
+	//Arrange
+	currentPlayer := 2
+	grid := CreateGrid()
+	grid, _ = PlaceShip(grid, 3, 5)
+	//Act
+	grid, result, _ := takeShot(grid, 2, 7)
+	got := turnChangesDependingOnShotTakingResult(currentPlayer, result)
+	//Assert
+	want := 2
+	if got != want {
+		t.Error("Expected current player to change to 2 after a miss, got ", got)
 	}
 }
 
