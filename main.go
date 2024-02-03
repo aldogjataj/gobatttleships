@@ -110,3 +110,11 @@ func turnChangesDependingOnShotTakingResult(currentPlayer int, shotResult string
 	}
 	return currentPlayer
 }
+func PlayerTurn(currentPlayer int, opponentGrid [7][7]string, col, row int) ([7][7]string, string, int, error) {
+	updatedGrid, result, err := takeShot(opponentGrid, col, row)
+	if err != nil {
+		return updatedGrid, "", currentPlayer, err
+	}
+	nextPlayer := changeTurnsBetweenPlayers1And2(currentPlayer)
+	return updatedGrid, result, nextPlayer, nil
+}

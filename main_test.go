@@ -506,3 +506,41 @@ func TestGetRandomGridSquare(t *testing.T) {
 		t.Error("Grid square column should be >0 and <10, but got: ", gridSquare[1])
 	}
 }
+func TestPlayerTurnShotResult(t *testing.T) {
+	currentPlayer := 1
+	opponentGrid := CreateGrid()
+	opponentGrid, _ = PlaceShip(opponentGrid, 3, 5) // Place a ship
+
+	_, shotResult, _, _ := PlayerTurn(currentPlayer, opponentGrid, 3, 5)
+	if shotResult != "HIT" {
+		t.Errorf("Expected shotResult to be 'HIT', got: %v", shotResult)
+	}
+}
+func TestPlayerTurnChange(t *testing.T) {
+	currentPlayer := 1
+	opponentGrid := CreateGrid()
+
+	_, _, nextPlayer, _ := PlayerTurn(currentPlayer, opponentGrid, 1, 1)
+	if nextPlayer != 2 {
+		t.Errorf("Expected next player to be 2, got: %v", nextPlayer)
+	}
+}
+func TestPlayerTurnGridUpdate(t *testing.T) {
+	currentPlayer := 1
+	opponentGrid := CreateGrid()
+	opponentGrid, _ = PlaceShip(opponentGrid, 3, 5) // Place a ship
+
+	updatedGrid, _, _, _ := PlayerTurn(currentPlayer, opponentGrid, 3, 5)
+	if updatedGrid[3][3] != "HIT" {
+		t.Errorf("Expected updatedGrid to have 'HIT' at [3][3], got: %v", updatedGrid[3][3])
+	}
+}
+func TestPlayerTurnErrorHandling(t *testing.T) {
+	currentPlayer := 1
+	opponentGrid := CreateGrid()
+
+	_, _, _, err := PlayerTurn(currentPlayer, opponentGrid, -1, -1)
+	if err == nil {
+		t.Error("Expected an error for out-of-bounds coordinates, got nil")
+	}
+}
